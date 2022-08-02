@@ -13,12 +13,13 @@ require_once "./functions/main.php";
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
     <link rel="stylesheet" href="./css/splide.min.css">
+    <link rel="stylesheet" href="./css/main.css">
     <title><?= ucfirst($page) ?></title>
 </head>
 
 <body>
 
-    <nav class="navbar navbar-expand-lg bg-light">
+    <nav class="navbar navbar-expand-lg sticky-top bg-light">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">First Project</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +38,19 @@ require_once "./functions/main.php";
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="index.php?page=galleries">Galleries</a>
+                    </li>
+
+                </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Profile
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="index.php?page=signup">Sign Up</a></li>
+                            <li><a class="dropdown-item" href="index.php?page=login">Login</a></li>
+
+                        </ul>
                     </li>
                 </ul>
             </div>

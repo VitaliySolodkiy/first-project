@@ -78,7 +78,7 @@ function uploadFile()
         }
     }
 
-    Message::set('File uploaded');
+    Message::set('File(s) uploaded');
     redirect('upload');
 }
 
