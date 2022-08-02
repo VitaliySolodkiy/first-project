@@ -39,7 +39,7 @@ function sendMail()
 
 function uploadFile()
 {
-    $file = $_FILES['file'];
+    $files = $_FILES['file'];
     if (isset($_POST['select'])) {
         $folderName =  'gallery/' . $_POST['select'] . '/' ?? '';
     } else {
@@ -47,27 +47,37 @@ function uploadFile()
     }
 
 
-    extract($file); // деструктуризация ассоциативного массива - автоматически создаются переменные с именами ключей
-    if ($error != 0) {
+    extract($files); // деструктуризация ассоциативного массива - автоматически создаются переменные с именами ключей
+    for ($i = 0; $i < count($error); $i++) {
+        if ($error[$i] > 0) {
+            $isError === true;
+            return;
+        }
+    }
+    if ($isError === true) {
         Message::set('Error', 'danger');
         redirect('upload');
     }
     $allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'];
-    if (!in_array($type, $allowed)) {
-        Message::set('Not allowed file type. Choose only images', 'danger');
-        redirect('upload');
+    foreach ($type as $currentFile) {
+        if (!in_array($currentFile, $allowed)) {
+            Message::set('Not allowed file type. Choose only images', 'danger');
+            redirect('upload');
+        }
     }
 
     if (!file_exists('./uploads')) {
         mkdir('uploads');
     }
 
-    $name = translit_file(microtime() . '_' . $name);
-
-    if (!move_uploaded_file($tmp_name, './uploads/' . $folderName . $name)) { //если произошла ошибка при перемещении файла в локальное хранилище
-        Message::set('Error', 'danger');
-        redirect('upload');
+    foreach ($name as $index => $currentName) {
+        $newName = translit_file(microtime() . '_' . $currentName);
+        if (!move_uploaded_file($tmp_name[$index], './uploads/' . $folderName . $newName)) { //если произошла ошибка при перемещении файла в локальное хранилище
+            Message::set('Error', 'danger');
+            redirect('upload');
+        }
     }
+
     Message::set('File uploaded');
     redirect('upload');
 }

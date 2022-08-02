@@ -62,7 +62,7 @@
         </select>
     </div>
     <div class="input-group mt-3">
-        <input type="file" name="file" class="form-control">
+        <input type="file" name="file[]" multiple class="form-control">
     </div>
     <button type="submit" class="btn btn-primary mt-3" name="action" value="uploadFile">Upload File</button>
 </form>
