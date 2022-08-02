@@ -34,7 +34,7 @@
             //dump($folders);
             foreach ($folders as $folderPath) {
                 $folderName = basename($folderPath);
-                echo "<option value='$folderName'>$folderName</option>";
+                echo "<option value='$folderPath'>$folderName</option>";
             }
             ?>
 

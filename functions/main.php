@@ -87,8 +87,21 @@ function createFolder()
 
 function deleteFolder()
 {
-    $folderName =  $_POST['select'];
-    rmdir("./uploads/gallery/" . $folderName);
+    $folderName =  $_POST['select'] . "/";
+    delTree($folderName);
     Message::set('Folder Deleted');
     redirect('upload');
+}
+
+//функция удаления дерева вложений внутри папки
+function delTree($dir)
+{
+    $files = glob($dir . '*', GLOB_MARK);
+    foreach ($files as $file) {
+        if (substr($file, -1) == '/')
+            delTree($file);
+        else
+            unlink($file);
+    }
+    rmdir($dir);
 }
