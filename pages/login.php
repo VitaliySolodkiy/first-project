@@ -10,7 +10,7 @@
         <input type="password" name="password" id="password" class="form-control" required>
     </div>
     <div>
-        <button class="btn btn-primary mt-3" name="action" value="">Login</button>
+        <button class="btn btn-primary mt-3" name="action" value="login">Login</button>
     </div>
 
 </form>

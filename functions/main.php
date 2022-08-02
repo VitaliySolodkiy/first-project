@@ -115,3 +115,54 @@ function delTree($dir)
     }
     rmdir($dir);
 }
+
+
+function register()
+{
+    $email = clear($_POST['email'] ?? null);
+    $login = clear($_POST['login'] ?? null);
+    $password = clear($_POST['password'] ?? null);
+    try {
+        $conn = new PDO("mysql:host=localhost;dbname=first-project", "root", "");
+
+        $users = "SELECT * FROM Users";
+        $result = $conn->query($users);
+        while ($row = $result->fetch()) {
+            if ($row['email'] === $email) {
+                Message::set("User with email: $email - is already exist");
+                redirect('signup');
+            }
+        }
+
+        $sql = "INSERT INTO Users (login, email, password) VALUES ('$login','$email', '$password' )";
+
+        $affectedRowsNumber = $conn->exec($sql);
+        Message::set("User has been created.<br> Was affected  $affectedRowsNumber row(s)<br> Now you can login, using email and password.");
+        redirect('login');
+    } catch (PDOException $e) {
+        echo "Database error: " . $e->getMessage();
+    }
+}
+
+function login()
+{
+    $email = clear($_POST['email'] ?? null);
+    $password = clear($_POST['password'] ?? null);
+    try {
+        $conn = new PDO("mysql:host=localhost;dbname=first-project", "root", "");
+
+        $users = "SELECT * FROM Users";
+        $result = $conn->query($users);
+        while ($row = $result->fetch()) {
+            if ($row['email'] === $email && $row['password'] === $password) {
+                Message::set("You have been successfully logged in");
+                redirect('login');
+            }
+        }
+
+        Message::set("Incorrect email or password", 'danger');
+        redirect('login');
+    } catch (PDOException $e) {
+        echo "Database error: " . $e->getMessage();
+    }
+}
