@@ -121,7 +121,7 @@ function register()
 {
     $email = clear($_POST['email'] ?? null);
     $login = clear($_POST['login'] ?? null);
-    $password = clear($_POST['password'] ?? null);
+    $password = md5(clear($_POST['password'] ?? null));
     try {
         $conn = new PDO("mysql:host=localhost;dbname=first-project", "root", "");
 
@@ -129,7 +129,7 @@ function register()
         $result = $conn->query($users);
         while ($row = $result->fetch()) {
             if ($row['email'] === $email) {
-                Message::set("User with email: $email - is already exist");
+                Message::set("User with email: $email - is already exist", "danger");
                 redirect('signup');
             }
         }
@@ -147,21 +147,24 @@ function register()
 function login()
 {
     $email = clear($_POST['email'] ?? null);
-    $password = clear($_POST['password'] ?? null);
+    $password = md5(clear($_POST['password'] ?? null));
     try {
         $conn = new PDO("mysql:host=localhost;dbname=first-project", "root", "");
 
-        $users = "SELECT * FROM Users";
+        $users = "SELECT * FROM Users WHERE email = '$email' and password = '$password'";
         $result = $conn->query($users);
-        while ($row = $result->fetch()) {
-            if ($row['email'] === $email && $row['password'] === $password) {
-                Message::set("You have been successfully logged in");
-                redirect('login');
-            }
+        $user = $result->fetch();
+        if ($user > 0) {
+            $_SESSION['user'] = [
+                "login" => $user["login"],
+                "email" => $user["email"],
+            ];
+            Message::set("You have been successfully logged in");
+            redirect('login');
+        } else {
+            Message::set("Incorrect email or password", 'danger');
+            redirect('login');
         }
-
-        Message::set("Incorrect email or password", 'danger');
-        redirect('login');
     } catch (PDOException $e) {
         echo "Database error: " . $e->getMessage();
     }

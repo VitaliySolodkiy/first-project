@@ -1,5 +1,11 @@
+<?php
+if (isset($_SESSION['user'])) {
+    header("location: index.php?page=profile");
+}
+Message::get();
+?>
+
 <h1>Login Page</h1>
-<?php Message::get() ?>
 <form action="index.php" method="POST">
     <div class="form-group">
         <label for="emain" class="form-label">Email:</label>
