@@ -115,3 +115,40 @@ function delTree($dir)
     }
     rmdir($dir);
 }
+
+function sendReview()
+{
+    $user = $_POST['user'] ?? null;
+    $message = $_POST['message'] ?? null;
+
+    if (!$user || !$message) {
+        Message::set('Errors', 'danger');
+        redirect('home');
+    }
+
+    $f = fopen('reviews.txt', 'a');
+    fwrite($f, "$user|$message|" . time() . "\r\n");
+    fclose($f);
+    Message::set('Thank you! Review has been saved');
+    redirect('home');
+}
+
+function showReviews()
+{
+    if (file_exists('reviews.txt')) {
+        $lines = file('reviews.txt');
+        foreach ($lines as $line) {
+            list($user, $message, $time) = explode('|', $line);
+?>
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title"><?= $user ?> <?= date('d.m.Y H:i', $time) ?></h5>
+                    <p class="card-text"><?= $message ?></p>
+                </div>
+            </div>
+
+<?php
+        }
+    }
+}
