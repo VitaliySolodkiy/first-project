@@ -3,6 +3,7 @@ session_start();
 
 require_once "./functions/helpers.php"; //тут важно написать путь, учитывая что mail.php подключается в index.php. Т.е. путь строим так, как будто мы находимся в нем
 require_once "./functions/Message.php";
+require_once "./elements/connection.php";
 $page = $_GET['page'] ?? 'home';
 
 $action = $_POST['action'] ?? null; //при отправке формы сюда записывает название функции (из параметра value кнопки отправки) в виде строки - 'sendMail'
@@ -117,13 +118,13 @@ function delTree($dir)
 }
 
 
-function register()
+/* function register()
 {
     $email = clear($_POST['email'] ?? null);
     $login = clear($_POST['login'] ?? null);
-    $password = md5(clear($_POST['password'] ?? null));
+    $password = password_hash(clear($_POST['password'] ?? null), null);
     try {
-        $conn = new PDO("mysql:host=localhost;dbname=first-project", "root", "");
+        $conn = getConnection();
 
         $users = "SELECT * FROM Users";
         $result = $conn->query($users);
@@ -142,19 +143,54 @@ function register()
     } catch (PDOException $e) {
         echo "Database error: " . $e->getMessage();
     }
+} */
+
+function register()
+{
+    $email = clear($_POST['email'] ?? null);
+    $login = clear($_POST['login'] ?? null);
+    $password = password_hash(clear($_POST['password'] ?? null), null);
+    try {
+        $conn = getConnection();
+
+        $users = "SELECT * FROM Users";
+        $result = $conn->query($users);
+        while ($row = $result->fetch()) {
+            if ($row['email'] === $email) {
+                Message::set("User with email: $email - is already exist", "danger");
+                redirect('signup');
+            }
+        }
+
+        $sql = "INSERT INTO Users (login, email, password) VALUES (:user_login, :user_email, :user_password)";
+
+        // определяем prepared statement
+        $stmt = $conn->prepare($sql);
+
+        // привязываем параметры к значениям
+        $stmt->bindValue(":user_login", $login);
+        $stmt->bindValue(":user_email", $email);
+        $stmt->bindValue(":user_password", $password);
+
+        $affectedRowsNumber = $stmt->execute();
+        Message::set("User has been created.<br> Was affected  $affectedRowsNumber row(s)<br> Now you can login, using email and password.");
+        redirect('login');
+    } catch (PDOException $e) {
+        echo "Database error: " . $e->getMessage();
+    }
 }
 
 function login()
 {
     $email = clear($_POST['email'] ?? null);
-    $password = md5(clear($_POST['password'] ?? null));
+    $password = clear($_POST['password'] ?? null);
     try {
-        $conn = new PDO("mysql:host=localhost;dbname=first-project", "root", "");
+        $conn = getConnection();
 
-        $users = "SELECT * FROM Users WHERE email = '$email' and password = '$password'";
+        $users = "SELECT * FROM Users WHERE email = '$email'";
         $result = $conn->query($users);
         $user = $result->fetch();
-        if ($user > 0) {
+        if ($user > 0 && password_verify($password, $user["password"])) {
             $_SESSION['user'] = [
                 "login" => $user["login"],
                 "email" => $user["email"],
